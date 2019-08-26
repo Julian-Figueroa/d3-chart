@@ -1,0 +1,22 @@
+[
+  {
+    "name": "soup",
+    "orders": 200
+  },
+  {
+    "name": "curry",
+    "orders": 600
+  },
+  {
+    "name": "pasta",
+    "orders": 300
+  },
+  {
+    "name": "surprise",
+    "orders": 900
+  },
+  {
+    "name": "hamburger",
+    "orders": 1500
+  }
+]
