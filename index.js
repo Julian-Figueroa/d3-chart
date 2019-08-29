@@ -27,55 +27,62 @@ const xAxisGroup = graph
   .attr('transform', `translate(0,${graphHeight})`);
 const yAxisGroup = graph.append('g');
 
-d3.json('menu.json').then(data => {
-  const max = d3.max(data, d => d.orders);
-  // const min = d3.min(data, d => d.orders);
-  // const extent = d3.extent(data, d => d.orders);
+db.collection('dishes')
+  .get()
+  .then(res => {
+    let data = [];
+    res.docs.map(doc => {
+      data.push(doc.data());
+    });
 
-  //scalling
-  const y = d3
-    .scaleLinear()
-    .domain([0, max])
-    .range([graphHeight, 0]);
+    const max = d3.max(data, d => d.orders);
+    // const min = d3.min(data, d => d.orders);
+    // const extent = d3.extent(data, d => d.orders);
 
-  const x = d3
-    .scaleBand()
-    .domain(data.map(item => item.name))
-    .range([0, graphWidth])
-    .paddingInner(0.2)
-    .paddingOuter(0.2);
+    //scalling
+    const y = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range([graphHeight, 0]);
 
-  const rects = graph.selectAll('rect').data(data);
+    const x = d3
+      .scaleBand()
+      .domain(data.map(item => item.name))
+      .range([0, graphWidth])
+      .paddingInner(0.2)
+      .paddingOuter(0.2);
 
-  rects
-    .attr('width', x.bandwidth)
-    .attr('height', d => graphHeight - y(d.orders))
-    .attr('fill', 'orange')
-    .attr('x', d => x(d.name))
-    .attr('y', d => y(d.orders));
+    const rects = graph.selectAll('rect').data(data);
 
-  rects
-    .enter()
-    .append('rect')
-    .attr('width', x.bandwidth)
-    .attr('height', d => graphHeight - y(d.orders))
-    .attr('fill', 'orange')
-    .attr('x', d => x(d.name))
-    .attr('y', d => y(d.orders));
+    rects
+      .attr('width', x.bandwidth)
+      .attr('height', d => graphHeight - y(d.orders))
+      .attr('fill', 'orange')
+      .attr('x', d => x(d.name))
+      .attr('y', d => y(d.orders));
 
-  //Create axis
-  const xAxis = d3.axisBottom(x);
-  const yAxis = d3
-    .axisLeft(y)
-    .ticks(3)
-    .tickFormat(d => d + ' orders');
+    rects
+      .enter()
+      .append('rect')
+      .attr('width', x.bandwidth)
+      .attr('height', d => graphHeight - y(d.orders))
+      .attr('fill', 'orange')
+      .attr('x', d => x(d.name))
+      .attr('y', d => y(d.orders));
 
-  xAxisGroup.call(xAxis);
-  yAxisGroup.call(yAxis);
+    //Create axis
+    const xAxis = d3.axisBottom(x);
+    const yAxis = d3
+      .axisLeft(y)
+      .ticks(3)
+      .tickFormat(d => d + ' orders');
 
-  xAxisGroup
-    .selectAll('text')
-    .attr('transform', 'rotate(-40)')
-    .attr('text-anchor', 'end')
-    .attr('fill', 'orange');
-});
+    xAxisGroup.call(xAxis);
+    yAxisGroup.call(yAxis);
+
+    xAxisGroup
+      .selectAll('text')
+      .attr('transform', 'rotate(-40)')
+      .attr('text-anchor', 'end')
+      .attr('fill', 'orange');
+  });
