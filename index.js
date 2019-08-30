@@ -50,6 +50,8 @@ xAxisGroup
   .attr('text-anchor', 'end')
   .attr('fill', 'orange');
 
+const transition = d3.transition().duration(1500);
+
 //Update function
 const update = data => {
   // updating scales
@@ -66,19 +68,26 @@ const update = data => {
   // update curretn shapes in DOM
   rects
     .attr('width', x.bandwidth)
-    .attr('height', d => graphHeight - y(d.orders))
     .attr('fill', 'orange')
-    .attr('x', d => x(d.name))
-    .attr('y', d => y(d.orders));
+    .attr('x', d => x(d.name));
+  // .transition(transition)
+  // .attr('height', d => graphHeight - y(d.orders))
+  // .attr('y', d => y(d.orders));
 
   //Enter, append the enter selection to the DOM
   rects
     .enter()
     .append('rect')
-    .attr('width', x.bandwidth)
-    .attr('height', d => graphHeight - y(d.orders))
+    // .attr('width', x.bandwidth)
+    // .attr('width', 0)
+    .attr('height', 0)
     .attr('fill', 'orange')
     .attr('x', d => x(d.name))
+    .attr('y', graphHeight)
+    .merge(rects)
+    .transition(transition)
+    .attrTween('width', widthTween)
+    .attr('height', d => graphHeight - y(d.orders))
     .attr('y', d => y(d.orders));
 
   // Calling Axis
@@ -129,3 +138,12 @@ db.collection('dishes').onSnapshot(res => {
   //   // update(data);
   // }, 1000);
 });
+
+//Tweens
+const widthTween = d => {
+  let i = d3.interpolate(0, x.bandwidth());
+
+  return function(t) {
+    return i(t);
+  };
+};
